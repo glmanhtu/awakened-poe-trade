@@ -7,10 +7,12 @@ const isDev = !process.argv.includes('--prod')
 const electronRunner = (() => {
   let handle = null
   return {
-    restart () {
+    async restart () {
       console.info('Restarting Electron process.')
 
       if (handle) handle.kill()
+      // Wait for a short delay before restarting
+      await new Promise(resolve => setTimeout(resolve, 1000))
       handle = child_process.spawn(electron, ['.'], {
         stdio: 'inherit'
       })
