@@ -16,6 +16,7 @@ const POSSIBLE_PATH =
 
 export class GameLogWatcher {
   private _wantedPath: string | null = null
+  private static watchingFiles: string[] = []
   get actualPath () { return this._state?.path ?? null }
   private _state: {
     offset: number
@@ -29,6 +30,14 @@ export class GameLogWatcher {
     private server: ServerEvents,
     private logger: Logger,
   ) {}
+
+  public static stopAll() {
+    for (const file of this.watchingFiles) {
+      unwatchFile(file)
+    }
+    this.watchingFiles = []
+  }
+
 
   async restart (logFile: string) {
     if (this._wantedPath !== logFile) {
@@ -55,6 +64,7 @@ export class GameLogWatcher {
       const file = await fs.open(logFile, 'r')
       const stats = await file.stat()
       watchFile(logFile, { interval: 450 }, this.handleFileChange.bind(this))
+      GameLogWatcher.watchingFiles.push(logFile)
       this._state = {
         path: logFile,
         file: file,

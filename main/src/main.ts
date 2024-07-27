@@ -24,6 +24,13 @@ app.enableSandbox()
 
 let tray: AppTray
 
+app.on('before-quit', () => {
+    uIOhook.stop();
+    GameLogWatcher.stopAll();
+    shutdownServer();
+    console.log("App is quitting...")
+})
+
 app.on('ready', async () => {
   tray = new AppTray(eventPipe)
   const logger = new Logger(eventPipe)

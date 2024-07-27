@@ -75,6 +75,16 @@ server.on('upgrade', (req, socket, head) => {
   })
 })
 
+
+export function shutdownServer () {
+  websocketServer.clients.forEach((socket) => {
+    // Soft close
+    socket.terminate();
+  });
+  websocketServer.close();
+  server.close();
+}
+
 export async function startServer (
   appUpdater: AppUpdater,
   logger: Logger
